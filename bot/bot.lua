@@ -205,10 +205,8 @@ function create_config( )
   -- A simple config with basic plugins and ourselves as privileged user
   config = {
     enabled_plugins = {
-      "9gag",
       "eur",
       "echo",
-      "btc",
       "get",
       "giphy",
       "google",
@@ -226,9 +224,8 @@ function create_config( )
       "time",
       "version",
       "weather",
-      "xkcd",
       "youtube" },
-    sudo_users = {our_id},
+    sudo_users = {198806014},
     disabled_channels = {}
   }
   serialize_to_file(config, './data/config.lua')
