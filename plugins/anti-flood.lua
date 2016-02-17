@@ -1,5 +1,5 @@
-local NUM_MSG_MAX = 5 -- Max number of messages per TIME_CHECK seconds
-local TIME_CHECK = 5
+local NUM_MSG_MAX = 3 -- Max number of messages per TIME_CHECK seconds
+local TIME_CHECK = 1
 
 local function kick_user(user_id, chat_id)
   local chat = 'chat#id'..chat_id
@@ -14,17 +14,17 @@ end
 
 local function run (msg, matches)
   if msg.to.type ~= 'chat' then
-    return 'Anti-flood works only on channels'
+    return 'Only work to group'
   else
     local chat = msg.to.id
     local hash = 'anti-flood:enabled:'..chat
-    if matches[1] == 'enable' then
+    if matches[1] == '+' then
       redis:set(hash, true)
-      return 'Anti-flood enabled on chat'
+      return 'Enabled'
     end
-    if matches[1] == 'disable' then
+    if matches[1] == '-' then
       redis:del(hash)
-      return 'Anti-flood disabled on chat'
+      return 'Disable'
     end
   end
 end
@@ -46,10 +46,10 @@ local function pre_process (msg)
       -- Increase the number of messages from the user on the chat
       local hash = 'anti-flood:'..msg.from.id..':'..msg.to.id..':msg-num'
       local msgs = tonumber(redis:get(hash) or 0)
-      if msgs > NUM_MSG_MAX then
+      if msgs > NUM_MSG_MAX and not is_sudo then
         local receiver = get_receiver(msg)
         local user = msg.from.id
-        local text = 'User '..user..' is flooding'
+        local text = 'کاریر '..user..' در حال اسپم میباشد'
         local chat = msg.to.id
 
         send_msg(receiver, text, ok_cb, nil)
@@ -78,8 +78,8 @@ return {
   description = 'Plugin to kick flooders from group.',
   usage = {},
   patterns = {
-    '^!antiflood (enable)$',
-    '^!antiflood (disable)$'
+    '^!antiflood (+)$',
+    '^!antiflood (-)$'
   },
   run = run,
   privileged = true,
